@@ -162,13 +162,13 @@ int main()
 	cout << "greens: " << rgbThreshold.blue << endl;
 
 	openTrainingImages();
-	//Mat m = imread("image/Capture5.png");
+
 	//for (int i = 0; i<trainingImage.size(); i++){
-		//imshow("hsv", m);
+		//imshow("hsv", trainingImage[i]);
 		
 		//waitKey(0); //Note: wait for user input for every image
 	//}
-	//return 0;
+	return 0;
 
 }
 
