@@ -21,7 +21,6 @@ typedef struct{
 
 typedef struct{
 	vector<Pixel> pixel;
-	bool isFire;
 }Images;
 
 RGB rgbThreshold;
@@ -149,8 +148,6 @@ void redThreshold(){
 void processTrainingImages(){
 	cout << "proccesed Image: " << processedImage.size() << endl;
 	cout << "training IMage:" << trainingImage.size() << endl;
-	cout << "training Image row: " << trainingImage[0].rows << endl;
-	cout << "training image column: " << trainingImage[0].cols << endl;
 	redThreshold();
 	YCbCrThreshold();
 	
@@ -191,8 +188,8 @@ int main()
 		imshow("processed Image", processedImage[i]);
 		
 		waitKey(0); //Note: wait for user input for every image
-	}
+   	}
 	return 0;
 
-}
+}  
 
