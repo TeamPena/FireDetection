@@ -16,11 +16,12 @@ typedef struct{
 
 typedef struct{
 	RGB rgb;
-	int row, col;
 }Pixel;
 
 typedef struct{
 	vector<Pixel> pixel;
+	bool isFire;
+	int rows, cols;
 }Images;
 
 RGB rgbThreshold;
@@ -48,26 +49,7 @@ void writeFile(RGB rgb){
 	out.close();
 }
 
-//store the pixels of the proccessed image in a vector
-void storeTrainingData(){ 
-	for (int x = 0; x < processedImage.size(); x++){
-		int ctr = 0;
-		image.push_back(Images());
-		for (int i = 0; i < frame.rows; i++)
-		{
-			for (int j = 0; j < frame.cols; j++)
-			{
-				image[x].pixel.push_back(Pixel());
-				image[x].pixel[ctr].rgb.red = processedImage[x].at<cv::Vec3b>(i, j)[2]; // store red
-				image[x].pixel[ctr].rgb.green = processedImage[x].at<cv::Vec3b>(i, j)[1]; //store green
-				image[x].pixel[ctr].rgb.blue = processedImage[x].at<cv::Vec3b>(i, j)[0]; // store blue
-				image[x].pixel[ctr].row = i; // store row
-				image[x].pixel[ctr].col = j; // store column
-				ctr++;
-			}
-		}
-	}
-}
+
 
 void YCbCrThreshold()
 {
@@ -77,7 +59,6 @@ void YCbCrThreshold()
 			for (int j = 0; j < processedImage[x].cols; j++)
 			{
 				bool isFire = false;
-
 				double bT = processedImage[x].at<cv::Vec3b>(i, j)[0]; // B		
 				double gT = processedImage[x].at<cv::Vec3b>(i, j)[1]; // G
 				double rT = processedImage[x].at<cv::Vec3b>(i, j)[2]; // R
@@ -85,11 +66,8 @@ void YCbCrThreshold()
 				double b = bT, g = gT, r = rT;
 
 				double y = 16 + r *  65.481 + g * 128.553 + b *24.996;
-				double cB = 128 + r * -37.797 - g * 74.203 + b *
-					112.0;
-
-				double cR = 128 + r * 112.00 + g * -93.7864 + b *
-					-18.214;
+				double cB = 128 + r * -37.797 - g * 74.203 + b * 112.0;
+				double cR = 128 + r * 112.00 + g * -93.7864 + b * -18.214;
 
 				isFire = (y >= cR >= cB);
 
@@ -153,6 +131,8 @@ void processTrainingImages(){
 	
 }
 
+
+
 void openTrainingImages(){
 	vector<cv::String> fn;
 	//cv::String  folder = "C:\\Thesis\\image\\positive";
@@ -172,6 +152,37 @@ void openTrainingImages(){
 void train(){
 
 }
+void writeCSV(){
+	ofstream myfile;
+	myfile.open("data.csv");
+	int ctr = 0;
+	int isFire = 0;
+	int sum = processedImage[0].rows * processedImage[0].cols;
+	cout << sum << endl;
+	myfile << "Pixel, Red, Green, Blue, Fire" << endl;
+	for (int x = 0; x < processedImage.size(); x++){
+		if (x > 1){
+			isFire = 1;
+		}
+		for (int i = 0; i < processedImage[x].rows; i++)
+		{
+			for (int j = 0; j < processedImage[x].cols; j++)
+			{
+				int b = processedImage[x].at<cv::Vec3b>(i, j)[0];
+				int g = processedImage[x].at<cv::Vec3b>(i, j)[1];
+				int r = processedImage[x].at<cv::Vec3b>(i, j)[2];
+
+				if (b != 0 && g != 0 && r != 0){
+
+					myfile << ctr << "," << r << "," << g << "," << b  << "," << isFire << endl;
+					ctr++;
+				}
+			}
+		}
+	}
+	myfile.close();
+}
+
 
 int main()
 {
@@ -180,9 +191,11 @@ int main()
 	cout << "red: " << rgbThreshold.red << endl;
 	cout << "blue: " << rgbThreshold.green << endl;
 	cout << "greens: " << rgbThreshold.blue << endl;
-
-	openTrainingImages();
+	
+    openTrainingImages();
 	processTrainingImages();
+	writeCSV();
+
 	for (int i = 0; i<trainingImage.size(); i++){
 		imshow("training Image", trainingImage[i]);
 		imshow("processed Image", processedImage[i]);
