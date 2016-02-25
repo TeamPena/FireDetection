@@ -142,7 +142,7 @@ void processTrainingImages(){
 void openTrainingImages(){
 	vector<cv::String> fn;
 	glob("image/*.png", fn, false);
-	size_t count = fn.size();
+	int count = fn.size();
 	cout << count << endl;
 	for (size_t i = 0; i<fn.size(); i++)
 	{
